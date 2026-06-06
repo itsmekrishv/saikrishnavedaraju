@@ -1,0 +1,28 @@
+{{- if .Values.firewall.enabled }}
+apiVersion: compute.gcp.upbound.io/v1beta1
+kind: Firewall
+metadata:
+  name: {{ include "crossplane-nginx.name" . }}-fw
+  labels:
+    {{- include "crossplane-nginx.labels" . | nindent 4 }}
+spec:
+  deletionPolicy: {{ .Values.deletionPolicy }}
+  providerConfigRef:
+    name: {{ .Values.providerConfigRef }}
+  forProvider:
+    network: {{ .Values.gcp.network | quote }}
+    direction: INGRESS
+    priority: 1000
+    targetTags:
+      - {{ .Values.firewall.targetTag | quote }}
+    sourceRanges:
+      {{- range .Values.firewall.sourceRanges }}
+      - {{ . | quote }}
+      {{- end }}
+    allow:
+      {{- range .Values.firewall.allowedTcpPorts }}
+      - protocol: tcp
+        ports:
+          - {{ . | quote }}
+      {{- end }}
+{{- end }}

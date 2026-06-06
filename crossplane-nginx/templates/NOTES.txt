@@ -1,0 +1,20 @@
+crossplane-nginx test release installed.
+
+Resources:
+  Instance:  {{ include "crossplane-nginx.name" . }}
+  Firewall:  {{ include "crossplane-nginx.name" . }}-fw
+
+Watch:
+  kubectl get instance.compute.gcp.upbound.io {{ include "crossplane-nginx.name" . }}
+  kubectl get firewall.compute.gcp.upbound.io {{ include "crossplane-nginx.name" . }}-fw
+
+Public IP (when ready):
+  kubectl get instance.compute.gcp.upbound.io {{ include "crossplane-nginx.name" . }} \
+    -o jsonpath='{.status.atProvider.networkInterface[0].accessConfig[0].natIp}{"\n"}'
+
+Then open: http://<public-ip>/  (Hello world)
+
+Delete test:
+  helm uninstall {{ .Release.Name }} -n {{ .Release.Namespace }}
+
+Requires: Crossplane 2.x + provider-gcp-compute + ProviderConfig "{{ .Values.providerConfigRef }}"

@@ -1,0 +1,43 @@
+apiVersion: compute.gcp.upbound.io/v1beta1
+kind: Instance
+metadata:
+  name: {{ include "crossplane-nginx.name" . }}
+  labels:
+    {{- include "crossplane-nginx.labels" . | nindent 4 }}
+spec:
+  deletionPolicy: {{ .Values.deletionPolicy }}
+  providerConfigRef:
+    name: {{ .Values.providerConfigRef }}
+  forProvider:
+    zone: {{ .Values.gcp.zone | quote }}
+    machineType: {{ .Values.gcp.machineType | quote }}
+    allowStoppingForUpdate: true
+    metadata:
+      - key: startup-script
+        value: |
+          #!/bin/bash
+          set -euxo pipefail
+          export DEBIAN_FRONTEND=noninteractive
+          apt-get update
+          apt-get install -y nginx
+          cat > /var/www/html/index.html <<'EOF'
+          <!DOCTYPE html>
+          <html><head><title>crossplane-nginx</title></head>
+          <body><h1>Hello world</h1></body></html>
+          EOF
+          systemctl enable nginx
+          systemctl restart nginx
+      - key: enable-oslogin
+        value: "TRUE"
+    bootDisk:
+      - initializeParams:
+          - image: {{ .Values.gcp.sourceImage | quote }}
+            size: {{ .Values.gcp.bootDiskSizeGb }}
+            type: {{ .Values.gcp.bootDiskType | quote }}
+    networkInterface:
+      - network: {{ .Values.gcp.network | quote }}
+        subnetwork: {{ .Values.gcp.subnetwork | quote }}
+        accessConfig:
+          - {}
+    tags:
+      - {{ .Values.firewall.targetTag | quote }}
