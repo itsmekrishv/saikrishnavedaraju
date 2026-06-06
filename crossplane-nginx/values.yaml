@@ -8,12 +8,12 @@ providerConfigRef: aavaz-gcp
 deletionPolicy: Delete
 
 gcp:
-  projectId: aavaz-361-291605
+  projectId: aavaz-361-production
   zone: us-central1-a
   region: us-central1
   # Existing VPC — use network self-link or short name
-  network: default
-  subnetwork: default
+  network: aavaz-prod-vpc
+  subnetwork: aavaz-prod-us-central1
   machineType: e2-medium
   bootDiskSizeGb: 10
   bootDiskType: pd-balanced
