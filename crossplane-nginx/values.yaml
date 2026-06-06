@@ -1,0 +1,30 @@
+# Name prefix for Crossplane managed resources (DNS-safe)
+name: crossplane-nginx-test
+
+# Must match an existing ProviderConfig (from crossplane-platform chart)
+providerConfigRef: aavaz-gcp
+
+# Delete = remove GCP resources when Helm release is uninstalled
+deletionPolicy: Delete
+
+gcp:
+  projectId: aavaz-361-291605
+  zone: us-central1-a
+  region: us-central1
+  # Existing VPC — use network self-link or short name
+  network: default
+  subnetwork: default
+  machineType: e2-medium
+  bootDiskSizeGb: 10
+  bootDiskType: pd-balanced
+  # Public Debian image (no Packer required for this test)
+  sourceImage: projects/debian-cloud/global/images/family/debian-12
+
+firewall:
+  enabled: true
+  sourceRanges:
+    - "0.0.0.0/0"
+  allowedTcpPorts:
+    - "80"
+  # Network tag on VM; firewall targets this tag
+  targetTag: crossplane-nginx

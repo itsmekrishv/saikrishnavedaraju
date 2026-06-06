@@ -1,0 +1,11 @@
+apiVersion: v2
+name: crossplane-nginx
+description: Minimal Crossplane GCP test — VM + firewall + nginx Hello World startup script
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
+keywords:
+  - crossplane
+  - gcp
+  - nginx
+  - test
